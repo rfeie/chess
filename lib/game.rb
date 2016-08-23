@@ -1,8 +1,6 @@
 require_relative 'board'
 
 class Game
-	#create players, board, set turn
-	#messages object?
 	attr_accessor :player1, :player2, :board, :turn
 	
 	def initialize
@@ -10,9 +8,8 @@ class Game
 		@player2 = {:name => "Player 2", :color => :black}
 		@board = Board.new(@player1, @player2)
 		@turn = @player1
-
 	end
-	#start game
+
 	def start_game
 		play_again = play
 
@@ -132,5 +129,3 @@ class Game
 	end
 
 end
-game = Game.new
-game.start_game
