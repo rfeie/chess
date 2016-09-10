@@ -2,7 +2,11 @@ require 'spec_helper'
 
 describe Board do
 	before :each do
-		@game = Game.new
+    player_1 = double(Player, name: "Player 1", color: :white)
+    player_2 = double(Player, name: "Player 2", color: :black)
+    input = FakeInput.new
+    output = FakeOutput.new
+		@game = Game.new(input: input, output: output, player_1: player_1, player_2: player_2)
 		@board = Board.new(@game.player1, @game.player2)
 	end
 

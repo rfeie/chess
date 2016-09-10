@@ -1,5 +1,8 @@
-require 'player'
-require 'player_generator'
+require_relative 'player'
+require_relative 'player_generator'
+require_relative 'output'
+require_relative 'input'
+require_relative 'game'
 
 class PlayChess
 

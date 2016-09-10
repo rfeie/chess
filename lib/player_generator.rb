@@ -1,6 +1,16 @@
 class PlayerGenerator
 
-  def create_player
-
+  def initialize
+    @colors = [:white, :black]
+    @names = ["Player 1", "Player 2"]
   end
+
+  def create_player
+    color = @colors.shift
+    name = @names.shift
+
+    Player.new(name: name, color: color)
+  end
+
+  
 end

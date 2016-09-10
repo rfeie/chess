@@ -3,12 +3,14 @@ require_relative 'board'
 class Game
 	attr_accessor :player1, :player2, :board, :turn
 	
-	def initialize
-		@player1 = {:name => "Player 1", :color => :white}
-		@player2 = {:name => "Player 2", :color => :black}
+  def initialize(player_1:, player_2:,input:, output:)
+		@player1 = player_1
+		@player2 = player_2
+    @_input = input
+    @_output = output
 		@board = Board.new(@player1, @player2)
 		@turn = @player1
-	end
+  end
 
 	def start_game
 		play_again = play
@@ -18,7 +20,7 @@ class Game
 				play_again = play
 			end
 
-		puts "Games are ended.\nShutting down!"
+		display "Games are ended.\nShutting down!"
 
 	end
 
@@ -27,33 +29,26 @@ class Game
 		check_mate = false
 
 		until check_mate
-			#check if past move resulted in a check
-			check = @board.check?(@board.board_info, @turn[:color])
+      check = @board.check?(@board.board_info, @turn.color)
 			if check[:check_mate]
-				puts @board.draw(@board.board_info)
+				display @board.draw(@board.board_info)
 				check_mate = true
-				puts "Checkmate! #{turn[:name]} loses!" 
+				display "Checkmate! #{turn.name} loses!" 
 			elsif check[:check]
 				#force them to move the king
-				puts @board.draw(@board.board_info)
-				puts "#{@turn[:name]} you are checked. Move your king to continue"
+				display @board.draw(@board.board_info)
+				display "#{@turn.name} you are checked. Move your king to continue"
 				move = get_move(true)
 				@board.board_info = @board.make_move(@board.board_info, move)
 				switch_turn
 			else
-				puts @board.draw(@board.board_info)
+				display @board.draw(@board.board_info)
 				move = get_move
 				@board.board_info = @board.make_move(@board.board_info, move)
 				switch_turn
 			end
 		end
 
-		puts "Do you want to play again? (y/n)"
-		play_again = gets.chomp.downcase
-		until play_again == "y" or play_again == "n"
-			puts "Invalid Input, Please type \"y\" or  \"n\""
-		end
-		return play_again.downcase == "y" ? true : false
 	end
 
 	def switch_turn
@@ -61,34 +56,34 @@ class Game
 	end
 
 	def get_move(checked = false)
-		puts "#{@turn[:name]} please choose the piece (#{(@turn[:color] == :black) ? "black" : "white" }) to move. Format should be \"x,y-x,y\", ex. \"0,1-0,2\""
-		input = gets.chomp
+		display "#{@turn.name} please choose the piece (#{(@turn.color == :black) ? "black" : "white" }) to move. Format should be \"x,y-x,y\", ex. \"0,1-0,2\""
+		input = get_input
 		move = valid_move(input)
 
 		if checked
-			is_legal = @board.legal_move(@board.board_info, move, @turn[:color],:king)
+			is_legal = @board.legal_move(@board.board_info, move, @turn.color,:king)
 			until is_legal[:legal] 
-				puts is_legal[:message]
-				input = gets.chomp
+				display is_legal[:message]
+				input = get_input
 				move = valid_move(input)
-				is_legal = @board.legal_move(@board.board_info, move, @turn[:color],:king)
+				is_legal = @board.legal_move(@board.board_info, move, @turn.color,:king)
 
 			end
-			check = check?(@board.board_info, @turn[:color], move[:to])
+			check = check?(@board.board_info, @turn.color, move[:to])
 			until check[:false] == false
-				puts "Move does not move you out of check, please enter again."
-				input = gets.chomp
+				display "Move does not move you out of check, please enter again."
+				input = get_input
 				move = valid_move(input)
-				check = check?(@board.board_info, @turn[:color], move[:to])
+				check = check?(@board.board_info, @turn.color, move[:to])
 			end
 		else
-			puts move
-			is_legal = @board.legal_move(@board.board_info, move, @turn[:color])
+			display move
+			is_legal = @board.legal_move(@board.board_info, move, @turn.color)
 			until is_legal[:legal] 
-				puts is_legal[:message]
-				input = gets.chomp
+				display is_legal[:message]
+				input = get_input
 				move = valid_move(input)
-				is_legal = @board.legal_move(@board.board_info, move, @turn[:color])
+				is_legal = @board.legal_move(@board.board_info, move, @turn.color)
 			end
 		end
 
@@ -114,18 +109,30 @@ class Game
 					move[:to] = moves[1]
 					valid = true
 				else
-					puts "Incorrect format from input #{input}. Please enter your input..."
-					input = gets.chomp
-
+					display "Incorrect format from input #{input}. Please enter your input..."
+					input = get_input
 				end
-
-
 			else
-				puts "Incorrect format from input #{input}. Please enter your input..."
-				input = gets.chomp
+				display "Incorrect format from input #{input}. Please enter your input..."
+				input = get_input
 			end
 		end
 		move
 	end
+
+  private
+
+  def get_input pattern = /.+/, valid_choices = "anything."
+    input = @_input.gets.match(pattern)
+    until input
+      display "Incorrect input, your choices should look like #{valid_choices}"
+      input = @_input.gets.match(pattern)
+    end
+    input[0]
+  end
+
+  def display message
+    @_output.puts message
+  end
 
 end
