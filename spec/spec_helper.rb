@@ -1,4 +1,5 @@
-require_relative '../lib/game.rb'
-require_relative '../lib/play_chess'
-require_relative 'support/fake_input.rb'
-require_relative 'support/fake_output.rb'
+$LOAD_PATH << File.join(File.dirname(__FILE__), '..')
+
+require 'lib/play_chess'
+require 'spec/support/fake_input.rb'
+require 'spec/support/fake_output.rb'

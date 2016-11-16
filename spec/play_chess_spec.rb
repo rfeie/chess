@@ -29,13 +29,14 @@ describe PlayChess do
   it "creates the game" do
     player_1 = double(Player)
     player_2 = double(Player)
+    board = stub_board
     stub_generator(player_1, player_2)
     stub_game
     input.responses << "n"
 
     described_class.new(input: input, output: output)
     
-    expect(Game).to have_received(:new).with(player_1: player_1, player_2: player_2, input: input, output: output)
+    expect(Game).to have_received(:new).with(player_1: player_1, player_2: player_2, input: input, output: output, board: board)
   end
 
   it "asks to play again and starts another" do
@@ -64,5 +65,11 @@ describe PlayChess do
     game = double(Game, start_game: nil, outcome: :finished)
     allow(Game).to receive(:new).and_return(game)
     game
+  end
+
+  def stub_board
+    board = double(Board)
+    allow(Board).to receive(:new).and_return(board)
+    board
   end
 end
